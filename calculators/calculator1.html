@@ -4,310 +4,172 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Box Calculator with Units & 3D View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* General Body Styles */
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            /* Ensure 3D elements are visible if they overflow slightly during rotation */
+            /* overflow-x: hidden;  Consider if needed based on final layout */
         }
 
-        /* Header */
-        header {
-            background: #333;
-            color: #fff;
-            padding: 1rem 0;
-            text-align: center;
-            width: 100%;
-        }
-
-        header .logo a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        /* Main Content Area */
-        main {
-            padding: 20px;
-            max-width: 950px; /* Adjusted for more controls */
-            width: 100%;
-            margin: 20px auto;
-            flex-grow: 1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .calculator-section, .visualization-section {
-            background: #fff;
-            padding: 20px 30px 30px 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 320px; /* Min width before wrapping */
-        }
-
-        .calculator-section h1, .visualization-section h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 15px; /* Adjusted spacing */
-        }
-        .form-group.inline {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .form-group.inline label {
-            margin-bottom: 0;
-            flex-shrink: 0;
-        }
-        .form-group.inline input[type="number"], .form-group.inline select {
-            flex-grow: 1;
-        }
-
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .form-group input[type="number"],
-        .form-group select,
-        .form-group input[type="range"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 0.95rem;
-        }
-         .form-group input[type="range"] {
-            padding: 0;
-         }
-
-        .form-group input[type="number"]:focus,
-        .form-group select:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-
-        .form-group button {
-            background: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            width: 100%;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .form-group button:hover {
-            background: #0056b3;
-        }
-
-        #results {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e9ecef;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        #results h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        #volumeResult {
-            font-size: 1.1rem; /* Adjusted size */
-            font-weight: bold;
-            color: #28a745;
-        }
-
-        #volumeResult.error {
-            color: #dc3545;
-        }
-
-        /* 3D Visualization Styles */
-        .visualization-section {
-             display: flex;
-             flex-direction: column;
-        }
-
+        /* 3D Visualization Specific Styles - Keep these as they are highly custom */
         .scene {
-            width: 100%;
-            min-height: 250px;
-            height: 300px;
-            perspective: 900px; /* Increased perspective */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            overflow: hidden;
-            border: 1px solid #eee;
-            border-radius: 4px;
-            background-color: #f9f9f9;
+            perspective: 900px;
+            display: flex; /* Kept for centering the box */
+            align-items: center; /* Kept for centering the box */
+            justify-content: center; /* Kept for centering the box */
+            /* Tailwind classes will handle background, border, padding, min-height */
         }
 
         .box {
             position: relative;
             transform-style: preserve-3d;
-            transform: rotateX(-20deg) rotateY(-30deg);
+            /* Initial rotation can be set via JS or inline style if preferred over CSS */
+            /* transform: rotateX(-20deg) rotateY(-30deg); */
         }
 
         .face {
             position: absolute;
-            background-color: rgba(0, 123, 255, 0.75); /* Slightly less transparent */
-            border: 1px solid #004085; /* Darker border */
-            color: white;
-            font-size: 10px; /* Smaller text on faces */
+            /* Tailwind classes will handle background, border, text color, font size, etc. */
+            /* background-color: rgba(0, 123, 255, 0.75); Replaced by Tailwind */
+            /* border: 1px solid #004085; Replaced by Tailwind */
+            color: white; /* Or use Tailwind text-white */
+            font-size: 0.75rem; /* Equivalent to text-xs, adjust if needed */
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
-            overflow: hidden; /* Hide text overflow on small faces */
-            /* backface-visibility: hidden; */
+            overflow: hidden;
         }
 
-        .rotation-controls {
-            margin-top: auto;
-        }
-        .rotation-controls label {
-            display: block;
-            margin-top: 8px;
-            margin-bottom: 4px;
-            font-size: 0.85em;
-        }
-        .rotation-controls input[type="range"] {
-            margin-bottom: 8px;
-        }
-        .dimension-display {
-            font-size: 0.8em;
-            color: #555; /* Darker text */
-            text-align: center;
-            margin-top: 5px;
-            padding: 5px;
-            background-color: #e9ecef;
-            border-radius: 3px;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: #333;
-            color: #fff;
+        /* Tailwind's range input styling is generally good, but for cross-browser consistency on the track/thumb,
+           you might need more specific CSS if the default Tailwind + browser styles aren't sufficient.
+           For now, relying on Tailwind's form styling and accent colors. */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
             width: 100%;
-            margin-top: auto;
+            height: 8px; /* Or use Tailwind h-2 */
+            border-radius: 9999px; /* Or use Tailwind rounded-full */
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px; /* Or use Tailwind w-5 */
+            height: 20px; /* Or use Tailwind h-5 */
+            border-radius: 9999px; /* Or use Tailwind rounded-full */
+            cursor: pointer;
+            /* The first example uses indigo for accents */
+             background-color: #4f46e5; /* Tailwind indigo-600 */
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 9999px;
+            cursor: pointer;
+            background-color: #4f46e5; /* Tailwind indigo-600 */
+            border: none;
         }
     </style>
 </head>
-<body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="#">Advanced PackagingCalc</a>
+<body class="bg-gray-100 text-gray-800 py-8 px-4">
+
+    <div class="container max-w-5xl mx-auto">
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl sm:text-3xl font-bold text-indigo-600">Advanced PackagingCalc</h1>
+                <a href="../" class="text-sm bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-3 rounded-md transition-colors">
+                    Go to Home
+                </a>
             </div>
-        </nav>
-    </header>
+        </div>
 
-    <main>
-        <section class="calculator-section">
-            <h1>Box Calculator</h1>
-            <form id="volumeCalculatorForm">
-                <div class="form-group">
-                    <label for="inputUnit">Input Dimensions Unit:</label>
-                    <select id="inputUnit">
-                        <option value="cm" selected>Centimeters (cm)</option>
-                        <option value="mm">Millimeters (mm)</option>
-                        <option value="in">Inches (in)</option>
-                        <option value="ft">Feet (ft)</option>
-                        <option value="m">Meters (m)</option>
-                    </select>
-                </div>
+        <main class="grid md:grid-cols-2 gap-8">
+            <section class="calculator-section bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-700 mb-6 text-center border-b pb-3">Box Calculator</h2>
+                <form id="volumeCalculatorForm" class="space-y-6">
+                    <div>
+                        <label for="inputUnit" class="block text-sm font-medium text-gray-700 mb-1">Input Dimensions Unit:</label>
+                        <select id="inputUnit" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="cm" selected>Centimeters (cm)</option>
+                            <option value="mm">Millimeters (mm)</option>
+                            <option value="in">Inches (in)</option>
+                            <option value="ft">Feet (ft)</option>
+                            <option value="m">Meters (m)</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="length">Length (L):</label>
-                    <input type="number" id="length" name="length" placeholder="e.g., 10" required value="10">
-                </div>
-                <div class="form-group">
-                    <label for="width">Width (W) (Depth for 3D):</label>
-                    <input type="number" id="width" name="width" placeholder="e.g., 5" required value="5">
-                </div>
-                <div class="form-group">
-                    <label for="height">Height (H):</label>
-                    <input type="number" id="height" name="height" placeholder="e.g., 8" required value="8">
-                </div>
+                    <div>
+                        <label for="length" class="block text-sm font-medium text-gray-700 mb-1">Length (L):</label>
+                        <input type="number" id="length" name="length" placeholder="e.g., 10" required value="10" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="width" class="block text-sm font-medium text-gray-700 mb-1">Width (W):</label>
+                        <input type="number" id="width" name="width" placeholder="e.g., 5" required value="5" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="height" class="block text-sm font-medium text-gray-700 mb-1">Height (H):</label>
+                        <input type="number" id="height" name="height" placeholder="e.g., 8" required value="8" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
 
-                 <div class="form-group">
-                    <label for="outputUnit">Output Volume Unit:</label>
-                    <select id="outputUnit">
-                        <option value="cm3" selected>Cubic Centimeters (cm³)</option>
-                        <option value="mm3">Cubic Millimeters (mm³)</option>
-                        <option value="in3">Cubic Inches (in³)</option>
-                        <option value="ft3">Cubic Feet (ft³)</option>
-                        <option value="m3">Cubic Meters (m³)</option>
-                    </select>
-                </div>
+                    <div>
+                        <label for="outputUnit" class="block text-sm font-medium text-gray-700 mb-1">Output Volume Unit:</label>
+                        <select id="outputUnit" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="cm3" selected>Cubic Centimeters (cm³)</option>
+                            <option value="mm3">Cubic Millimeters (mm³)</option>
+                            <option value="in3">Cubic Inches (in³)</option>
+                            <option value="ft3">Cubic Feet (ft³)</option>
+                            <option value="m3">Cubic Meters (m³)</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <button type="submit">Calculate & Visualize</button>
+                    <div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-md shadow-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Calculate & Visualize
+                        </button>
+                    </div>
+                </form>
+                <div id="results" class="mt-8 p-6 bg-indigo-50 rounded-lg shadow-inner">
+                    <h3 class="text-lg font-semibold text-indigo-700 mb-2 text-center">Result:</h3>
+                    <p id="volumeResult" class="text-center text-indigo-600 font-bold">Enter dimensions and select units.</p>
                 </div>
-            </form>
-            <div id="results">
-                <h3>Result:</h3>
-                <p id="volumeResult">Enter dimensions and select units.</p>
-            </div>
-        </section>
+            </section>
 
-        <section class="visualization-section">
-            <h2>3D Visualization</h2>
-            <div class="scene">
-                <div class="box" id="box3D">
-                    <div class="face front">L</div>
-                    <div class="face back"></div>
-                    <div class="face left">W</div>
-                    <div class="face right"></div>
-                    <div class="face top">H</div>
-                    <div class="face bottom"></div>
+            <section class="visualization-section bg-white p-6 sm:p-8 rounded-xl shadow-lg flex flex-col">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-700 mb-6 text-center border-b pb-3">3D Visualization</h2>
+                <div class="scene w-full min-h-[300px] sm:min-h-[350px] border border-gray-200 rounded-md bg-gray-50 flex-grow mb-6">
+                    <div class="box" id="box3D">
+                        <div class="face front bg-indigo-500/75 border border-indigo-700">L</div>
+                        <div class="face back bg-indigo-500/75 border border-indigo-700"></div>
+                        <div class="face left bg-indigo-500/75 border border-indigo-700">W</div>
+                        <div class="face right bg-indigo-500/75 border border-indigo-700"></div>
+                        <div class="face top bg-indigo-500/75 border border-indigo-700">H</div>
+                        <div class="face bottom bg-indigo-500/75 border border-indigo-700"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="rotation-controls">
-                <label for="rotateXSlider">Rotate X (<span id="rotateXVal">-20</span>°):</label>
-                <input type="range" id="rotateXSlider" min="-360" max="360" value="-20">
-                <label for="rotateYSlider">Rotate Y (<span id="rotateYVal">-30</span>°):</label>
-                <input type="range" id="rotateYSlider" min="-360" max="360" value="-30">
-                 <div class="dimension-display" id="visualizedDimensions">
-                    Scaled from mm: L:0, W:0, H:0
+                <div class="rotation-controls space-y-4">
+                    <div>
+                        <label for="rotateXSlider" class="block text-sm font-medium text-gray-700 mb-1">Rotate X (<span id="rotateXVal">-20</span>°):</label>
+                        <input type="range" id="rotateXSlider" min="-360" max="360" value="-20" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    </div>
+                    <div>
+                        <label for="rotateYSlider" class="block text-sm font-medium text-gray-700 mb-1">Rotate Y (<span id="rotateYVal">-30</span>°):</label>
+                        <input type="range" id="rotateYSlider" min="-360" max="360" value="-30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    </div>
+                    <div class="dimension-display text-xs text-gray-600 bg-gray-100 p-3 rounded-md text-center" id="visualizedDimensions">
+                        Scaled from mm: L:0, W:0, H:0
+                    </div>
                 </div>
-            </div>
-        </section>
-    </main>
+            </section>
+        </main>
+    </div>
 
-    <footer>
-        <p>&copy; <span id="currentYear"></span> Advanced PackagingCalc. All rights reserved.</p>
+    <footer class="text-center py-8 mt-12 sm:mt-16 border-t border-gray-200 bg-white">
+        <p class="text-xs text-gray-500"><span id="currentYear"></span> KP's Quick Maths. All rights reserved.</p>
     </footer>
 
     <script>
@@ -329,8 +191,8 @@
                 top: box3D.querySelector('.top'),
                 bottom: box3D.querySelector('.bottom')
             };
-            // Set text content for faces for better orientation understanding if needed
-            faces.front.textContent = 'L'; faces.left.textContent = 'W'; faces.top.textContent = 'H';
+            // Initial text content is set in HTML, can be dynamically updated if needed.
+            // faces.front.textContent = 'L'; faces.left.textContent = 'W'; faces.top.textContent = 'H';
 
 
             const rotateXSlider = document.getElementById('rotateXSlider');
@@ -345,74 +207,70 @@
             }
 
             const conversionFactorsToMM = {
-                'mm': 1,
-                'cm': 10,
-                'm': 1000,
-                'in': 25.4,
-                'ft': 304.8
+                'mm': 1, 'cm': 10, 'm': 1000, 'in': 25.4, 'ft': 304.8
             };
-
-            // Base unit for volume is mm³
             const conversionFactorsFromMM3 = {
-                'mm3': 1,
-                'cm3': Math.pow(1/10, 3),
-                'm3': Math.pow(1/1000, 3),
-                'in3': Math.pow(1/25.4, 3),
-                'ft3': Math.pow(1/304.8, 3)
+                'mm3': 1, 'cm3': Math.pow(1/10, 3), 'm3': Math.pow(1/1000, 3),
+                'in3': Math.pow(1/25.4, 3), 'ft3': Math.pow(1/304.8, 3)
             };
-             const unitSymbols = {
-                'mm3': 'mm³', 'cm3': 'cm³', 'm3': 'm³',
-                'in3': 'in³', 'ft3': 'ft³'
+            const unitSymbols = {
+                'mm3': 'mm³', 'cm3': 'cm³', 'm3': 'm³', 'in3': 'in³', 'ft3': 'ft³'
             };
-
 
             function updateBoxVisualization(lengthMM, widthMM, heightMM) {
-                const MAX_PIXEL_DIM = 180;
+                const MAX_PIXEL_DIM = 180; // Max dimension of box in pixels for visualization
+                const MIN_PIXEL_DIM = 20;  // Min dimension for very small boxes to remain visible
                 const allDims = [lengthMM, widthMM, heightMM].filter(d => d > 0);
                 let scale_factor = 1;
 
                 if (allDims.length > 0) {
                     const max_input_dim_mm = Math.max(...allDims);
-                    scale_factor = MAX_PIXEL_DIM / max_input_dim_mm;
-
-                    if (max_input_dim_mm * scale_factor < 20 && max_input_dim_mm > 0) { // Min visual size
-                         scale_factor = 20 / max_input_dim_mm;
-                    }
-                     if (max_input_dim_mm * scale_factor > MAX_PIXEL_DIM * 1.5 ) { // Cap max visual size
-                        scale_factor = (MAX_PIXEL_DIM * 1.5) / max_input_dim_mm;
+                    if (max_input_dim_mm > 0) {
+                         scale_factor = MAX_PIXEL_DIM / max_input_dim_mm;
+                        // Ensure the scaled dimension is not too small
+                        if (max_input_dim_mm * scale_factor < MIN_PIXEL_DIM) {
+                            scale_factor = MIN_PIXEL_DIM / max_input_dim_mm;
+                        }
+                        // Cap the visual size if inputs are extremely different, or very large
+                         if (max_input_dim_mm * scale_factor > MAX_PIXEL_DIM * 1.5 ) {
+                             scale_factor = (MAX_PIXEL_DIM * 1.5) / max_input_dim_mm;
+                         }
                     }
                 } else { // If all dimensions are zero or invalid
                     lengthMM = 0; widthMM = 0; heightMM = 0;
                 }
 
+                // Apply a minimum visual size if a dimension is > 0 but would scale to < 1px for faces
+                const L_px = Math.max(1, lengthMM * scale_factor);
+                const W_px = Math.max(1, widthMM * scale_factor);
+                const H_px = Math.max(1, heightMM * scale_factor);
 
-                const L = lengthMM * scale_factor;
-                const W = widthMM * scale_factor; // Depth for 3D
-                const H = heightMM * scale_factor;
 
-                visualizedDimensionsDisplay.textContent = `Scaled from mm: L:${lengthMM.toFixed(1)}, W:${widthMM.toFixed(1)}, H:${heightMM.toFixed(1)}`;
+                visualizedDimensionsDisplay.textContent = `Scaled from Inputs (mm): L:${lengthMM.toFixed(1)}, W:${widthMM.toFixed(1)}, H:${heightMM.toFixed(1)}`;
 
-                faces.front.style.width = `${L}px`; faces.front.style.height = `${H}px`;
-                faces.front.style.transform = `translateX(-${L/2}px) translateY(-${H/2}px) translateZ(${W/2}px)`;
+                faces.front.style.width = `${L_px}px`; faces.front.style.height = `${H_px}px`;
+                faces.front.style.transform = `translateX(-${L_px/2}px) translateY(-${H_px/2}px) translateZ(${W_px/2}px)`;
 
-                faces.back.style.width = `${L}px`; faces.back.style.height = `${H}px`;
-                faces.back.style.transform = `translateX(-${L/2}px) translateY(-${H/2}px) rotateY(180deg) translateZ(${W/2}px)`;
+                faces.back.style.width = `${L_px}px`; faces.back.style.height = `${H_px}px`;
+                faces.back.style.transform = `translateX(-${L_px/2}px) translateY(-${H_px/2}px) rotateY(180deg) translateZ(${W_px/2}px)`;
 
-                faces.right.style.width = `${W}px`; faces.right.style.height = `${H}px`;
-                faces.right.style.transform = `translateX(-${W/2}px) translateY(-${H/2}px) rotateY(90deg) translateZ(${L/2}px)`;
+                faces.right.style.width = `${W_px}px`; faces.right.style.height = `${H_px}px`;
+                faces.right.style.transform = `translateX(-${W_px/2}px) translateY(-${H_px/2}px) rotateY(90deg) translateZ(${L_px/2}px)`;
 
-                faces.left.style.width = `${W}px`; faces.left.style.height = `${H}px`;
-                faces.left.style.transform = `translateX(-${W/2}px) translateY(-${H/2}px) rotateY(-90deg) translateZ(${L/2}px)`;
+                faces.left.style.width = `${W_px}px`; faces.left.style.height = `${H_px}px`;
+                faces.left.style.transform = `translateX(-${W_px/2}px) translateY(-${H_px/2}px) rotateY(-90deg) translateZ(${L_px/2}px)`;
 
-                faces.top.style.width = `${L}px`; faces.top.style.height = `${W}px`;
-                faces.top.style.transform = `translateX(-${L/2}px) translateY(-${W/2}px) rotateX(90deg) translateZ(${H/2}px)`;
+                faces.top.style.width = `${L_px}px`; faces.top.style.height = `${W_px}px`;
+                faces.top.style.transform = `translateX(-${L_px/2}px) translateY(-${W_px/2}px) rotateX(90deg) translateZ(${H_px/2}px)`;
 
-                faces.bottom.style.width = `${L}px`; faces.bottom.style.height = `${W}px`;
-                faces.bottom.style.transform = `translateX(-${L/2}px) translateY(-${W/2}px) rotateX(-90deg) translateZ(${H/2}px)`;
+                faces.bottom.style.width = `${L_px}px`; faces.bottom.style.height = `${W_px}px`;
+                faces.bottom.style.transform = `translateX(-${L_px/2}px) translateY(-${W_px/2}px) rotateX(-90deg) translateZ(${H_px/2}px)`;
             }
 
             function handleCalculationAndVisualization() {
-                volumeResultElement.classList.remove('error');
+                volumeResultElement.classList.remove('text-red-600'); // Clear previous error color
+                volumeResultElement.classList.add('text-indigo-600');
+
 
                 const lengthVal = parseFloat(lengthInput.value);
                 const widthVal = parseFloat(widthInput.value);
@@ -422,34 +280,37 @@
 
                 if (isNaN(lengthVal) || isNaN(widthVal) || isNaN(heightVal)) {
                     volumeResultElement.textContent = 'Please enter valid numbers for all dimensions.';
-                    volumeResultElement.classList.add('error');
+                    volumeResultElement.classList.add('text-red-600');
+                    volumeResultElement.classList.remove('text-indigo-600');
                     updateBoxVisualization(0, 0, 0);
                     return;
                 }
 
                 if (lengthVal <= 0 || widthVal <= 0 || heightVal <= 0) {
-                    volumeResultElement.textContent = 'Dimensions must be positive numbers.';
-                    volumeResultElement.classList.add('error');
-                    // Still visualize if some dimensions are positive
+                    volumeResultElement.textContent = 'Dimensions must be positive numbers for volume calculation.';
+                    volumeResultElement.classList.add('text-red-600');
+                    volumeResultElement.classList.remove('text-indigo-600');
+                    // Visualize with 0 for non-positive dimensions for the 3D model
                     const l_mm_viz = lengthVal > 0 ? lengthVal * conversionFactorsToMM[selectedInputUnit] : 0;
                     const w_mm_viz = widthVal > 0 ? widthVal * conversionFactorsToMM[selectedInputUnit] : 0;
                     const h_mm_viz = heightVal > 0 ? heightVal * conversionFactorsToMM[selectedInputUnit] : 0;
                     updateBoxVisualization(l_mm_viz, w_mm_viz, h_mm_viz);
-                    return;
+                    // Do not return if you still want to show "0" volume or a specific message for it
+                    // If a valid volume cannot be computed, you might want to update text accordingly
+                    if (!(lengthVal > 0 && widthVal > 0 && heightVal > 0)) {
+                         volumeResultElement.textContent = 'Volume: 0 (requires all positive dimensions)';
+                    }
+                    return; // Or let it proceed to calculate volume which will be 0 or negative.
+                            // Current logic: if any dim <=0, it's an error for volume calculation.
                 }
 
-                // Convert all inputs to mm for calculation and visualization
                 const lengthMM = lengthVal * conversionFactorsToMM[selectedInputUnit];
-                const widthMM = widthVal * conversionFactorsToMM[selectedInputUnit]; // This is depth
+                const widthMM = widthVal * conversionFactorsToMM[selectedInputUnit];
                 const heightMM = heightVal * conversionFactorsToMM[selectedInputUnit];
-
                 const volumeMM3 = lengthMM * widthMM * heightMM;
-
-                // Convert volume to selected output unit
                 const outputVolume = volumeMM3 * conversionFactorsFromMM3[selectedOutputUnit];
 
                 volumeResultElement.textContent = `Volume: ${outputVolume.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 5})} ${unitSymbols[selectedOutputUnit]}`;
-
                 updateBoxVisualization(lengthMM, widthMM, heightMM);
             }
 
@@ -468,14 +329,18 @@
 
             rotateXSlider.addEventListener('input', updateRotation);
             rotateYSlider.addEventListener('input', updateRotation);
-            [inputUnitSelect, outputUnitSelect].forEach(sel => {
-                sel.addEventListener('change', handleCalculationAndVisualization);
+
+            // Recalculate if units or dimensions change
+            [lengthInput, widthInput, heightInput, inputUnitSelect, outputUnitSelect].forEach(el => {
+                el.addEventListener('change', handleCalculationAndVisualization);
+                if (el.type === 'number') { // Add input event for number fields for real-time updates
+                    el.addEventListener('input', handleCalculationAndVisualization);
+                }
             });
 
-
             // Initial calculation and visualization
-            handleCalculationAndVisualization();
-            updateRotation();
+            handleCalculationAndVisualization(); // Calculate based on default values
+            updateRotation(); // Apply initial rotation
         });
     </script>
 </body>
