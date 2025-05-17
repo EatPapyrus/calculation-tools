@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimensional (DIM) Weight Calculator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #212529;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-group input[type="number"]:focus,
+        .form-group select:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group .form-control { /* For inputs next to selects */
+            flex-grow: 1;
+        }
+        .input-group select {
+             flex-shrink: 0;
+             width: auto; /* Allow select to size based on content */
+        }
+
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+        }
+
+        .results h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #0056b3;
+            text-align: center;
+        }
+
+        .results p {
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            line-height: 1.7;
+            color: #343a40;
+        }
+        .results p strong {
+            color: #212529;
+        }
+        .billable-weight {
+            font-weight: bold;
+            color: #dc3545 !important; /* Highlight billable weight */
+            font-size: 1.15rem !important;
+        }
+        .calculation-note {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+
+
+        #customDivisorGroup {
+            display: none; /* Hidden by default */
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px dashed #ced4da;
+        }
+        #customDivisorGroup label {
+            font-size: 0.95em;
+        }
+
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>DIM Weight Calculator</h1>
+
+        <form id="dimWeightForm">
+            <div class="form-group">
+                <label for="dimUnit">Dimension Unit:</label>
+                <select id="dimUnit">
+                    <option value="in" selected>Inches (in)</option>
+                    <option value="cm">Centimeters (cm)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="length">Length:</label>
+                <input type="number" id="length" placeholder="e.g., 12" required step="any">
+            </div>
+
+            <div class="form-group">
+                <label for="width">Width:</label>
+                <input type="number" id="width" placeholder="e.g., 10" required step="any">
+            </div>
+
+            <div class="form-group">
+                <label for="height">Height:</label>
+                <input type="number" id="height" placeholder="e.g., 8" required step="any">
+            </div>
+
+            <hr style="margin: 25px 0;">
+
+            <div class="form-group">
+                <label for="actualWeightUnit">Actual Weight Unit:</label>
+                <select id="actualWeightUnit">
+                    <option value="lb" selected>Pounds (lb)</option>
+                    <option value="kg">Kilograms (kg)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="actualWeight">Actual Weight:</label>
+                <input type="number" id="actualWeight" placeholder="e.g., 5" required step="any">
+            </div>
+
+            <hr style="margin: 25px 0;">
+
+            <div class="form-group">
+                <label for="dimProfile">Carrier/DIM Profile:</label>
+                <select id="dimProfile">
+                    <option value="std_in_lb_139" selected>Standard (Divisor 139 for in/lb)</option>
+                    <option value="std_cm_kg_5000">Standard (Divisor 5000 for cm/kg)</option>
+                    <option value="usps_in_lb_166">USPS-like (Divisor 166 for in/lb)</option>
+                    <option value="iata_cm_kg_6000">IATA (Divisor 6000 for cm/kg)</option>
+                    <option value="custom">Custom Divisor</option>
+                </select>
+            </div>
+
+            <div id="customDivisorGroup" class="form-group">
+                <label for="customDivisor">Custom Divisor (ensure it matches selected dimension units):</label>
+                <input type="number" id="customDivisor" placeholder="e.g., 139" step="any">
+                 <p class="calculation-note" style="font-size: 0.8em; margin-top: 5px;">
+                    If using inches, result is lbs. If cm, result is kg.
+                </p>
+            </div>
+
+            <button type="submit">Calculate Billable Weight</button>
+        </form>
+
+        <div id="resultsDisplay" class="results" style="display: none;">
+            <h2>Calculation Results</h2>
+            <p>Selected Dimension Unit: <strong id="resDimUnit"></strong></p>
+            <p>Selected Actual Weight Unit: <strong id="resActualWeightUnit"></strong></p>
+            <p>Cubic Size: <strong id="resCubicSize"></strong></p>
+            <p>Actual Weight: <strong id="resActualWeight"></strong></p>
+            <p>DIM Factor / Divisor Used: <strong id="resDivisor"></strong></p>
+            <p>Calculated DIM Weight: <strong id="resDimWeight"></strong></p>
+            <hr>
+            <p class="billable-weight">Billable Weight: <strong id="resBillableWeight"></strong></p>
+            <p id="billableReason" class="calculation-note"></p>
+        </div>
+        <div class="calculation-note" style="margin-top: 20px; text-align:center;">
+            <strong>Note:</strong> Dimensional (DIM) weight reflects package density. Shippers charge the greater of the actual weight or DIM weight.
+            Always confirm specific DIM factors with your carrier.
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="currentYear">2025</span> Shipping Calculators Inc. All rights reserved.</p>
+        <p style="font-size:0.8em;">Last updated: May 17, 2025</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('dimWeightForm');
+            const resultsDisplay = document.getElementById('resultsDisplay');
+            const dimProfileSelect = document.getElementById('dimProfile');
+            const customDivisorGroup = document.getElementById('customDivisorGroup');
+            const customDivisorInput = document.getElementById('customDivisor');
+
+            // Output elements
+            const resDimUnit = document.getElementById('resDimUnit');
+            const resActualWeightUnit = document.getElementById('resActualWeightUnit');
+            const resCubicSize = document.getElementById('resCubicSize');
+            const resActualWeight = document.getElementById('resActualWeight');
+            const resDivisor = document.getElementById('resDivisor');
+            const resDimWeight = document.getElementById('resDimWeight');
+            const resBillableWeight = document.getElementById('resBillableWeight');
+            const billableReason = document.getElementById('billableReason');
+
+            // Update copyright year (using provided date context)
+            document.getElementById('currentYear').textContent = '2025';
+
+
+            const dimProfiles = {
+                'std_in_lb_139': { name: "Standard (Divisor 139 for in/lb)", divisor: 139, needsDimUnit: 'in', yieldsWeightUnit: 'lb' },
+                'std_cm_kg_5000': { name: "Standard (Divisor 5000 for cm/kg)", divisor: 5000, needsDimUnit: 'cm', yieldsWeightUnit: 'kg' },
+                'usps_in_lb_166': { name: "USPS-like (Divisor 166 for in/lb)", divisor: 166, needsDimUnit: 'in', yieldsWeightUnit: 'lb' },
+                'iata_cm_kg_6000': { name: "IATA (Divisor 6000 for cm/kg)", divisor: 6000, needsDimUnit: 'cm', yieldsWeightUnit: 'kg' },
+                'custom': { name: "Custom Divisor", divisor: null, needsDimUnit: null, yieldsWeightUnit: null } // Will use selected units
+            };
+
+            // Conversion factors
+            const IN_TO_CM = 2.54;
+            const CM_TO_IN = 1 / 2.54;
+            const LB_TO_KG = 0.45359237;
+            const KG_TO_LB = 1 / 0.45359237;
+
+            dimProfileSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customDivisorGroup.style.display = 'block';
+                } else {
+                    customDivisorGroup.style.display = 'none';
+                }
+            });
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Get user inputs
+                let L = parseFloat(document.getElementById('length').value);
+                let W = parseFloat(document.getElementById('width').value);
+                let H = parseFloat(document.getElementById('height').value);
+                let userSelectedDimUnit = document.getElementById('dimUnit').value;
+
+                let actualWeightInput = parseFloat(document.getElementById('actualWeight').value);
+                let userSelectedActualWeightUnit = document.getElementById('actualWeightUnit').value;
+
+                let selectedProfileKey = dimProfileSelect.value;
+                let currentProfile = dimProfiles[selectedProfileKey];
+                let divisor = currentProfile.divisor;
+
+                if (isNaN(L) || isNaN(W) || isNaN(H) || isNaN(actualWeightInput) || L <= 0 || W <= 0 || H <= 0 || actualWeightInput < 0) {
+                    alert('Please enter valid positive numbers for dimensions and a non-negative actual weight.');
+                    return;
+                }
+
+                if (selectedProfileKey === 'custom') {
+                    divisor = parseFloat(customDivisorInput.value);
+                    if (isNaN(divisor) || divisor <= 0) {
+                        alert('Please enter a valid positive custom divisor.');
+                        return;
+                    }
+                    // For custom, the 'needsDimUnit' and 'yieldsWeightUnit' are the user's currently selected units
+                    currentProfile.needsDimUnit = userSelectedDimUnit;
+                    currentProfile.yieldsWeightUnit = userSelectedActualWeightUnit; // DIM weight will be in this unit
+                }
+
+                // --- Unit Conversions for Calculation ---
+                let L_calc = L;
+                let W_calc = W;
+                let H_calc = H;
+
+                // Convert dimensions to the unit system required by the selected profile's divisor
+                if (userSelectedDimUnit === 'cm' && currentProfile.needsDimUnit === 'in') {
+                    L_calc *= CM_TO_IN; W_calc *= CM_TO_IN; H_calc *= CM_TO_IN;
+                } else if (userSelectedDimUnit === 'in' && currentProfile.needsDimUnit === 'cm') {
+                    L_calc *= IN_TO_CM; W_calc *= IN_TO_CM; H_calc *= IN_TO_CM;
+                }
+                // If units already match profile.needsDimUnit, no conversion needed for dimensions.
+
+                // Calculate Cubic Size in the unit system of the divisor
+                let cubicSize = L_calc * W_calc * H_calc;
+                let displayCubicSize = L * W * H; // Original unit cubic size for display
+
+                // Calculate DIM Weight in the unit yielded by the divisor (e.g., lbs or kg)
+                let dimWeightInDivisorUnit = cubicSize / divisor;
+
+                // Convert Actual Weight to the unit system yielded by the divisor for comparison
+                let actualWeightInDivisorUnit = actualWeightInput;
+                if (userSelectedActualWeightUnit === 'kg' && currentProfile.yieldsWeightUnit === 'lb') {
+                    actualWeightInDivisorUnit *= KG_TO_LB;
+                } else if (userSelectedActualWeightUnit === 'lb' && currentProfile.yieldsWeightUnit === 'kg') {
+                    actualWeightInDivisorUnit *= LB_TO_KG;
+                }
+
+                // Determine Billable Weight (still in divisor's yield unit)
+                let billableWeightInDivisorUnit = Math.max(actualWeightInDivisorUnit, dimWeightInDivisorUnit);
+
+                // --- Convert results back to user's selected ACTUAL WEIGHT unit for display ---
+                let dimWeightForDisplay = dimWeightInDivisorUnit;
+                let billableWeightForDisplay = billableWeightInDivisorUnit;
+
+                if (currentProfile.yieldsWeightUnit === 'lb' && userSelectedActualWeightUnit === 'kg') {
+                    dimWeightForDisplay *= LB_TO_KG;
+                    billableWeightForDisplay *= LB_TO_KG;
+                } else if (currentProfile.yieldsWeightUnit === 'kg' && userSelectedActualWeightUnit === 'lb') {
+                    dimWeightForDisplay *= KG_TO_LB;
+                    billableWeightForDisplay *= KG_TO_LB;
+                }
+                // Actual weight for display is just the original input
+                let actualWeightForDisplay = actualWeightInput;
+
+
+                // Display results
+                resultsDisplay.style.display = 'block';
+                resDimUnit.textContent = userSelectedDimUnit;
+                resActualWeightUnit.textContent = userSelectedActualWeightUnit.toUpperCase();
+
+                resCubicSize.textContent = `${displayCubicSize.toFixed(2)} ${userSelectedDimUnit}³`;
+                resActualWeight.textContent = `${actualWeightForDisplay.toFixed(2)} ${userSelectedActualWeightUnit.toUpperCase()}`;
+                resDivisor.textContent = `${divisor} (for ${currentProfile.needsDimUnit}/${currentProfile.yieldsWeightUnit} system)`;
+                if (selectedProfileKey === 'custom') {
+                     resDivisor.textContent = `${divisor} (custom, using ${userSelectedDimUnit}/${userSelectedActualWeightUnit.toUpperCase()})`;
+                }
+
+
+                resDimWeight.textContent = `${dimWeightForDisplay.toFixed(2)} ${userSelectedActualWeightUnit.toUpperCase()}`;
+                resBillableWeight.textContent = `${billableWeightForDisplay.toFixed(2)} ${userSelectedActualWeightUnit.toUpperCase()}`;
+
+                if (billableWeightForDisplay > actualWeightForDisplay + 0.001) { // Using a small epsilon for float comparison
+                    billableReason.textContent = `The DIM Weight is higher than the Actual Weight.`;
+                    resBillableWeight.style.color = '#dc3545'; // Red for emphasis
+                } else if (Math.abs(billableWeightForDisplay - actualWeightForDisplay) < 0.001) {
+                     billableReason.textContent = `Actual Weight and DIM Weight are effectively the same.`;
+                     resBillableWeight.style.color = '#28a745'; // Green for emphasis
+                }
+                else {
+                    billableReason.textContent = `The Actual Weight is higher than or equal to the DIM Weight.`;
+                    resBillableWeight.style.color = '#28a745'; // Green for emphasis
+                }
+
+                 // Scroll to results on small screens
+                if (window.innerWidth < 768) {
+                    resultsDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

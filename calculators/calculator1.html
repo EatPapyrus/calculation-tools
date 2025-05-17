@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Box Calculator with Units & 3D View</title>
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        header .logo a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Main Content Area */
+        main {
+            padding: 20px;
+            max-width: 950px; /* Adjusted for more controls */
+            width: 100%;
+            margin: 20px auto;
+            flex-grow: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .calculator-section, .visualization-section {
+            background: #fff;
+            padding: 20px 30px 30px 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 320px; /* Min width before wrapping */
+        }
+
+        .calculator-section h1, .visualization-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px; /* Adjusted spacing */
+        }
+        .form-group.inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-group.inline label {
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+        .form-group.inline input[type="number"], .form-group.inline select {
+            flex-grow: 1;
+        }
+
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+         .form-group input[type="range"] {
+            padding: 0;
+         }
+
+        .form-group input[type="number"]:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+
+        .form-group button {
+            background: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .form-group button:hover {
+            background: #0056b3;
+        }
+
+        #results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        #results h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #volumeResult {
+            font-size: 1.1rem; /* Adjusted size */
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        #volumeResult.error {
+            color: #dc3545;
+        }
+
+        /* 3D Visualization Styles */
+        .visualization-section {
+             display: flex;
+             flex-direction: column;
+        }
+
+        .scene {
+            width: 100%;
+            min-height: 250px;
+            height: 300px;
+            perspective: 900px; /* Increased perspective */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .box {
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(-30deg);
+        }
+
+        .face {
+            position: absolute;
+            background-color: rgba(0, 123, 255, 0.75); /* Slightly less transparent */
+            border: 1px solid #004085; /* Darker border */
+            color: white;
+            font-size: 10px; /* Smaller text on faces */
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: hidden; /* Hide text overflow on small faces */
+            /* backface-visibility: hidden; */
+        }
+
+        .rotation-controls {
+            margin-top: auto;
+        }
+        .rotation-controls label {
+            display: block;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            font-size: 0.85em;
+        }
+        .rotation-controls input[type="range"] {
+            margin-bottom: 8px;
+        }
+        .dimension-display {
+            font-size: 0.8em;
+            color: #555; /* Darker text */
+            text-align: center;
+            margin-top: 5px;
+            padding: 5px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #333;
+            color: #fff;
+            width: 100%;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="#">Advanced PackagingCalc</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="calculator-section">
+            <h1>Box Calculator</h1>
+            <form id="volumeCalculatorForm">
+                <div class="form-group">
+                    <label for="inputUnit">Input Dimensions Unit:</label>
+                    <select id="inputUnit">
+                        <option value="cm" selected>Centimeters (cm)</option>
+                        <option value="mm">Millimeters (mm)</option>
+                        <option value="in">Inches (in)</option>
+                        <option value="ft">Feet (ft)</option>
+                        <option value="m">Meters (m)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="length">Length (L):</label>
+                    <input type="number" id="length" name="length" placeholder="e.g., 10" required value="10">
+                </div>
+                <div class="form-group">
+                    <label for="width">Width (W) (Depth for 3D):</label>
+                    <input type="number" id="width" name="width" placeholder="e.g., 5" required value="5">
+                </div>
+                <div class="form-group">
+                    <label for="height">Height (H):</label>
+                    <input type="number" id="height" name="height" placeholder="e.g., 8" required value="8">
+                </div>
+
+                 <div class="form-group">
+                    <label for="outputUnit">Output Volume Unit:</label>
+                    <select id="outputUnit">
+                        <option value="cm3" selected>Cubic Centimeters (cm³)</option>
+                        <option value="mm3">Cubic Millimeters (mm³)</option>
+                        <option value="in3">Cubic Inches (in³)</option>
+                        <option value="ft3">Cubic Feet (ft³)</option>
+                        <option value="m3">Cubic Meters (m³)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit">Calculate & Visualize</button>
+                </div>
+            </form>
+            <div id="results">
+                <h3>Result:</h3>
+                <p id="volumeResult">Enter dimensions and select units.</p>
+            </div>
+        </section>
+
+        <section class="visualization-section">
+            <h2>3D Visualization</h2>
+            <div class="scene">
+                <div class="box" id="box3D">
+                    <div class="face front">L</div>
+                    <div class="face back"></div>
+                    <div class="face left">W</div>
+                    <div class="face right"></div>
+                    <div class="face top">H</div>
+                    <div class="face bottom"></div>
+                </div>
+            </div>
+            <div class="rotation-controls">
+                <label for="rotateXSlider">Rotate X (<span id="rotateXVal">-20</span>°):</label>
+                <input type="range" id="rotateXSlider" min="-360" max="360" value="-20">
+                <label for="rotateYSlider">Rotate Y (<span id="rotateYVal">-30</span>°):</label>
+                <input type="range" id="rotateYSlider" min="-360" max="360" value="-30">
+                 <div class="dimension-display" id="visualizedDimensions">
+                    Scaled from mm: L:0, W:0, H:0
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; <span id="currentYear"></span> Advanced PackagingCalc. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('volumeCalculatorForm');
+            const lengthInput = document.getElementById('length');
+            const widthInput = document.getElementById('width');
+            const heightInput = document.getElementById('height');
+            const inputUnitSelect = document.getElementById('inputUnit');
+            const outputUnitSelect = document.getElementById('outputUnit');
+            const volumeResultElement = document.getElementById('volumeResult');
+
+            const box3D = document.getElementById('box3D');
+            const faces = {
+                front: box3D.querySelector('.front'),
+                back: box3D.querySelector('.back'),
+                left: box3D.querySelector('.left'),
+                right: box3D.querySelector('.right'),
+                top: box3D.querySelector('.top'),
+                bottom: box3D.querySelector('.bottom')
+            };
+            // Set text content for faces for better orientation understanding if needed
+            faces.front.textContent = 'L'; faces.left.textContent = 'W'; faces.top.textContent = 'H';
+
+
+            const rotateXSlider = document.getElementById('rotateXSlider');
+            const rotateYSlider = document.getElementById('rotateYSlider');
+            const rotateXVal = document.getElementById('rotateXVal');
+            const rotateYVal = document.getElementById('rotateYVal');
+            const visualizedDimensionsDisplay = document.getElementById('visualizedDimensions');
+
+            const yearSpan = document.getElementById('currentYear');
+            if (yearSpan) {
+                yearSpan.textContent = new Date().getFullYear();
+            }
+
+            const conversionFactorsToMM = {
+                'mm': 1,
+                'cm': 10,
+                'm': 1000,
+                'in': 25.4,
+                'ft': 304.8
+            };
+
+            // Base unit for volume is mm³
+            const conversionFactorsFromMM3 = {
+                'mm3': 1,
+                'cm3': Math.pow(1/10, 3),
+                'm3': Math.pow(1/1000, 3),
+                'in3': Math.pow(1/25.4, 3),
+                'ft3': Math.pow(1/304.8, 3)
+            };
+             const unitSymbols = {
+                'mm3': 'mm³', 'cm3': 'cm³', 'm3': 'm³',
+                'in3': 'in³', 'ft3': 'ft³'
+            };
+
+
+            function updateBoxVisualization(lengthMM, widthMM, heightMM) {
+                const MAX_PIXEL_DIM = 180;
+                const allDims = [lengthMM, widthMM, heightMM].filter(d => d > 0);
+                let scale_factor = 1;
+
+                if (allDims.length > 0) {
+                    const max_input_dim_mm = Math.max(...allDims);
+                    scale_factor = MAX_PIXEL_DIM / max_input_dim_mm;
+
+                    if (max_input_dim_mm * scale_factor < 20 && max_input_dim_mm > 0) { // Min visual size
+                         scale_factor = 20 / max_input_dim_mm;
+                    }
+                     if (max_input_dim_mm * scale_factor > MAX_PIXEL_DIM * 1.5 ) { // Cap max visual size
+                        scale_factor = (MAX_PIXEL_DIM * 1.5) / max_input_dim_mm;
+                    }
+                } else { // If all dimensions are zero or invalid
+                    lengthMM = 0; widthMM = 0; heightMM = 0;
+                }
+
+
+                const L = lengthMM * scale_factor;
+                const W = widthMM * scale_factor; // Depth for 3D
+                const H = heightMM * scale_factor;
+
+                visualizedDimensionsDisplay.textContent = `Scaled from mm: L:${lengthMM.toFixed(1)}, W:${widthMM.toFixed(1)}, H:${heightMM.toFixed(1)}`;
+
+                faces.front.style.width = `${L}px`; faces.front.style.height = `${H}px`;
+                faces.front.style.transform = `translateX(-${L/2}px) translateY(-${H/2}px) translateZ(${W/2}px)`;
+
+                faces.back.style.width = `${L}px`; faces.back.style.height = `${H}px`;
+                faces.back.style.transform = `translateX(-${L/2}px) translateY(-${H/2}px) rotateY(180deg) translateZ(${W/2}px)`;
+
+                faces.right.style.width = `${W}px`; faces.right.style.height = `${H}px`;
+                faces.right.style.transform = `translateX(-${W/2}px) translateY(-${H/2}px) rotateY(90deg) translateZ(${L/2}px)`;
+
+                faces.left.style.width = `${W}px`; faces.left.style.height = `${H}px`;
+                faces.left.style.transform = `translateX(-${W/2}px) translateY(-${H/2}px) rotateY(-90deg) translateZ(${L/2}px)`;
+
+                faces.top.style.width = `${L}px`; faces.top.style.height = `${W}px`;
+                faces.top.style.transform = `translateX(-${L/2}px) translateY(-${W/2}px) rotateX(90deg) translateZ(${H/2}px)`;
+
+                faces.bottom.style.width = `${L}px`; faces.bottom.style.height = `${W}px`;
+                faces.bottom.style.transform = `translateX(-${L/2}px) translateY(-${W/2}px) rotateX(-90deg) translateZ(${H/2}px)`;
+            }
+
+            function handleCalculationAndVisualization() {
+                volumeResultElement.classList.remove('error');
+
+                const lengthVal = parseFloat(lengthInput.value);
+                const widthVal = parseFloat(widthInput.value);
+                const heightVal = parseFloat(heightInput.value);
+                const selectedInputUnit = inputUnitSelect.value;
+                const selectedOutputUnit = outputUnitSelect.value;
+
+                if (isNaN(lengthVal) || isNaN(widthVal) || isNaN(heightVal)) {
+                    volumeResultElement.textContent = 'Please enter valid numbers for all dimensions.';
+                    volumeResultElement.classList.add('error');
+                    updateBoxVisualization(0, 0, 0);
+                    return;
+                }
+
+                if (lengthVal <= 0 || widthVal <= 0 || heightVal <= 0) {
+                    volumeResultElement.textContent = 'Dimensions must be positive numbers.';
+                    volumeResultElement.classList.add('error');
+                    // Still visualize if some dimensions are positive
+                    const l_mm_viz = lengthVal > 0 ? lengthVal * conversionFactorsToMM[selectedInputUnit] : 0;
+                    const w_mm_viz = widthVal > 0 ? widthVal * conversionFactorsToMM[selectedInputUnit] : 0;
+                    const h_mm_viz = heightVal > 0 ? heightVal * conversionFactorsToMM[selectedInputUnit] : 0;
+                    updateBoxVisualization(l_mm_viz, w_mm_viz, h_mm_viz);
+                    return;
+                }
+
+                // Convert all inputs to mm for calculation and visualization
+                const lengthMM = lengthVal * conversionFactorsToMM[selectedInputUnit];
+                const widthMM = widthVal * conversionFactorsToMM[selectedInputUnit]; // This is depth
+                const heightMM = heightVal * conversionFactorsToMM[selectedInputUnit];
+
+                const volumeMM3 = lengthMM * widthMM * heightMM;
+
+                // Convert volume to selected output unit
+                const outputVolume = volumeMM3 * conversionFactorsFromMM3[selectedOutputUnit];
+
+                volumeResultElement.textContent = `Volume: ${outputVolume.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 5})} ${unitSymbols[selectedOutputUnit]}`;
+
+                updateBoxVisualization(lengthMM, widthMM, heightMM);
+            }
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                handleCalculationAndVisualization();
+            });
+
+            function updateRotation() {
+                const rotX = rotateXSlider.value;
+                const rotY = rotateYSlider.value;
+                box3D.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+                rotateXVal.textContent = rotX;
+                rotateYVal.textContent = rotY;
+            }
+
+            rotateXSlider.addEventListener('input', updateRotation);
+            rotateYSlider.addEventListener('input', updateRotation);
+            [inputUnitSelect, outputUnitSelect].forEach(sel => {
+                sel.addEventListener('change', handleCalculationAndVisualization);
+            });
+
+
+            // Initial calculation and visualization
+            handleCalculationAndVisualization();
+            updateRotation();
+        });
+    </script>
+</body>
+</html>
