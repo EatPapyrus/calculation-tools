@@ -1,0 +1,79 @@
+/* style.css */
+
+/* Apply Inter font to the body, Tailwind will handle most other typography */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Custom styles (optional, Tailwind is preferred for most styling) */
+.custom-button {
+    /* Example of a custom style if needed, though Tailwind classes are preferred */
+    transition: background-color 0.3s ease, transform 0.15s ease-in-out; /* Combined transitions */
+}
+
+/*
+   Note: Tailwind CSS is loaded via CDN in the HTML.
+   You can add more custom CSS here if needed, or rely primarily on Tailwind classes
+   in your HTML for styling.
+*/
+
+/* Style for the message box */
+.message-box {
+    position: fixed; /* Fixed position relative to the viewport */
+    top: 20px; /* 20 pixels from the top */
+    right: 20px; /* 20 pixels from the right */
+    padding: 1rem; /* Padding inside the box */
+    border-radius: 0.5rem; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    z-index: 1000; /* Ensure it's above other content */
+    opacity: 0; /* Start fully transparent */
+    transform: translateY(-20px); /* Start slightly above its final position */
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Smooth transition for appearing */
+    max-width: 300px; /* Maximum width of the notification */
+    word-wrap: break-word; /* Ensure long messages wrap */
+}
+
+.message-box.show {
+    opacity: 1; /* Make it fully visible */
+    transform: translateY(0); /* Move to its final position */
+}
+
+/* Styling for a success message */
+.message-box.success {
+    background-color: #d1fae5; /* Tailwind's green-200 */
+    color: #065f46; /* Tailwind's green-800 */
+    border-left: 5px solid #10b981; /* Tailwind's green-500 for a side accent */
+}
+
+/* Styling for an error message (example, not used in current JS but good to have) */
+.message-box.error {
+    background-color: #fee2e2; /* Tailwind's red-200 */
+    color: #991b1b; /* Tailwind's red-800 */
+    border-left: 5px solid #ef4444; /* Tailwind's red-500 */
+}
+
+/* Styling for an info message (example) */
+.message-box.info {
+    background-color: #dbeafe; /* Tailwind's blue-200 */
+    color: #1e40af; /* Tailwind's blue-800 */
+    border-left: 5px solid #3b82f6; /* Tailwind's blue-500 */
+}
+
+/* Ensure the body takes up at least the full viewport height */
+/* html, body {
+    height: 100%;
+    margin: 0;
+} */
+
+/* Flexbox centering for the main content is handled by Tailwind in the body tag */
+/* body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Use min-height for flexibility */
+/* } */
+
+/* Additional styling for better visual appeal could go here */
+/* For example, a subtle background pattern or gradient */
+
