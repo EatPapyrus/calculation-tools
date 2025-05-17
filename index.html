@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Test Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles (optional, Tailwind is preferred) */
+        body {
+            font-family: 'Inter', sans-serif; /* Default to Inter font */
+        }
+        .custom-button {
+            /* Example of a custom style if needed, though Tailwind classes are preferred */
+            transition: background-color 0.3s ease;
+        }
+        .custom-button:hover {
+            /* Example of a custom hover style */
+        }
+        /* Style for the message box */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .message-box.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .message-box.success {
+            background-color: #d1fae5; /* Tailwind green-200 */
+            color: #065f46; /* Tailwind green-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
+
+    <div class="bg-white shadow-xl rounded-lg p-6 md:p-10 max-w-2xl w-full text-center">
+
+        <header class="mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">Hello World!</h1>
+        </header>
+
+        <main class="mb-8">
+            <p id="message" class="text-lg text-gray-700 mb-6">
+                This is a simple HTML page with a touch of CSS and JavaScript.
+            </p>
+
+            <button id="actionButton"
+                    class="custom-button bg-indigo-500 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75 transform hover:scale-105 transition-transform duration-150 ease-in-out">
+                Click Me!
+            </button>
+        </main>
+
+        <footer class="mt-auto">
+            <p class="text-sm text-gray-500">
+                &copy; <span id="currentYear"></span> Your Name/Project. All rights reserved.
+            </p>
+        </footer>
+    </div>
+
+    <div id="notificationBox" class="message-box">
+        <p id="notificationMessage"></p>
+    </div>
+
+    <script>
+        // --- JavaScript Section ---
+
+        // Get references to the HTML elements we want to interact with
+        const messageElement = document.getElementById('message');
+        const actionButton = document.getElementById('actionButton');
+        const currentYearElement = document.getElementById('currentYear');
+        const notificationBox = document.getElementById('notificationBox');
+        const notificationMessage = document.getElementById('notificationMessage');
+
+        // Variable to keep track of clicks
+        let clickCount = 0;
+
+        /**
+         * Shows a notification message.
+         * @param {string} message - The message to display.
+         * @param {string} type - The type of message (e.g., 'success', 'error').
+         */
+        function showNotification(message, type = 'success') {
+            notificationMessage.textContent = message;
+            notificationBox.className = `message-box ${type}`; // Reset classes and add type
+            notificationBox.classList.add('show');
+
+            // Hide the notification after 3 seconds
+            setTimeout(() => {
+                notificationBox.classList.remove('show');
+            }, 3000);
+        }
+
+        // Add an event listener to the button for click events
+        actionButton.addEventListener('click', function() {
+            clickCount++; // Increment the click counter
+
+            // Change the text content of the message element
+            if (clickCount === 1) {
+                messageElement.textContent = "Great! You clicked the button!";
+                messageElement.classList.add('text-green-600', 'font-semibold'); // Add some style
+                showNotification('Button clicked successfully!', 'success');
+            } else if (clickCount > 1 && clickCount < 5) {
+                messageElement.textContent = `You've clicked the button ${clickCount} times! Keep going!`;
+                messageElement.classList.remove('text-green-600');
+                messageElement.classList.add('text-blue-600');
+                 showNotification(`Click number ${clickCount}!`, 'success');
+            } else if (clickCount >= 5) {
+                messageElement.textContent = `Wow, ${clickCount} clicks! You're a click master!`;
+                messageElement.classList.remove('text-blue-600');
+                messageElement.classList.add('text-purple-600', 'text-xl');
+                actionButton.textContent = "Click me again?"; // Change button text
+                showNotification('You are a click master!', 'success');
+            }
+
+            // Change button text after the first click
+            if (clickCount >= 1) {
+                actionButton.textContent = "Click Me Again!";
+            }
+        });
+
+        // Set the current year in the footer
+        const year = new Date().getFullYear();
+        if (currentYearElement) {
+            currentYearElement.textContent = year;
+        }
+
+        // --- Responsive Adjustments & Touch Events (Example) ---
+        // This is a placeholder for more complex responsive JS if needed.
+        // For this simple page, Tailwind CSS handles most responsiveness.
+
+        // Example: Log window resize events
+        window.addEventListener('resize', function() {
+            console.log(`Window resized to: ${window.innerWidth}x${window.innerHeight}`);
+            // You could add logic here to adjust elements if CSS isn't enough
+        });
+
+        // Example: Add touch event listener to the button for mobile
+        actionButton.addEventListener('touchstart', function(event) {
+            // Prevent ghost clicks if also handling 'click'
+            event.preventDefault();
+            console.log('Button touched!');
+            // Trigger the click handler programmatically
+            actionButton.click();
+        }, { passive: false }); // passive:false if preventDefault is used
+
+        console.log("JavaScript initialized successfully!");
+
+    </script>
+</body>
+</html>
